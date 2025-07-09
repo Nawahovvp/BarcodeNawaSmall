@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>รายการเบิกอะไหล่</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+  <style>
+    body {
+      font-family: 'Prompt', sans-serif;
+      background-color: #f0f4f8;
+      margin: 0;
+      padding: 20px;
+    }
+    #searchContainer {
+      display: flex;
+      justify-content: flex-start;
+      margin-bottom: 20px;
+    }
+    #searchInput {
+      width: 100%;
+      max-width: 300px;
+      padding: 10px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      font-size: 16px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: #fff;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+      border-radius: 12px;
+      overflow: hidden;
+    }
+    th, td {
+      padding: 6px 12px;
+      text-align: left;
+      border-bottom: 1px solid #e0e0e0;
+      cursor: pointer;
+    }
+    th {
+      background-color: #007bff;
+      color: white;
+    }
+    td:nth-child(6) {
+      min-width: 180px;
+    }
+    tr:hover {
+      background-color: #f1f1f1;
+    }
+    .status-green {
+      color: green;
+      font-weight: bold;
+    }
+    .status-red {
+      color: red;
+      font-weight: bold;
+    }
+    .detail-button {
+      padding: 6px 10px;
+      background-color: #3498db;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+    .detail-button:hover {
+      background-color: #2980b9;
+    }
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 1000;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      overflow: auto;
+      background-color: rgba(0,0,0,0.5);
+    }
+    .modal-content {
+      background-color: #fff;
+      margin: 10% auto;
+      padding: 20px;
+      border-radius: 12px;
+      width: 80%;
+      max-width: 500px;
+    }
+    .close {
+      color: #aaa;
+      float: right;
+      font-size: 24px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    .close:hover {
+      color: #000;
+    }
+    #modalContent span.label {
+      color: #007bff;
+      font-weight: bold;
+    }
+    #modalContent span.value {
+      color: #000;
+    }
+    .pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 20px;
+}
+    .pagination button,
+    .pagination select {
+      padding: 8px 12px;
+      background-color: #3498db;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 16px;
+      margin: 0 5px;
+    }
+    .pagination button:hover,
+    .pagination select:hover {
+      background-color: #2980b9;
+    }
+    .pagination .page-number {
+      padding: 6px 10px;
+      background-color: #ecf0f1;
+      color: #3498db;
+      border-radius: 6px;
+      margin: 0 3px;
+      cursor: pointer;
+    }
+    .pagination .page-number.active {
+      background-color: #3498db;
+      color: white;
+    }
+    .pagination img {
+      width: 20px;
+      height: 20px;
+      cursor: pointer;
+    }
+    .items-per-page {
+      margin-left: 10px;
+      font-size: 16px;
+    }
+    .pagination {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  margin-top: 10px;
+}
+
+.pagination button,
+.pagination select {
+  padding: 8px 12px;
+  background-color: #3498db;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 16px;
+  margin: 0 5px;
+}
+
+.pagination button:hover,
+.pagination select:hover {
+  background-color: #2980b9;
+}
+
+.pagination .page-number {
+  padding: 6px 10px;
+  background-color: #ecf0f1;
+  color: #3498db;
+  border-radius: 6px;
+  margin: 0 3px;
+  cursor: pointer;
+}
+
+.pagination .page-number.active {
+  background-color: #3498db;
+  color: white;
+}
+
+.pagination img {
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
+}
+
+.items-per-page {
+  margin-left: 10px;
+  font-size: 16px;
+}
+.pagination .page-number {
+  width: 36px;
+  height: 36px;
+  background-color: #3498db; /* น้ำเงิน */
+  color: white;
+  border-radius: 50%;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  margin: 0 5px;
+  cursor: pointer;
+  font-size: 16px;
+  border: none;
+  transition: background-color 0.3s; /* ลื่นตอน hover */
+}
+
+.pagination .page-number:hover {
+  background-color: #2980b9; /* น้ำเงินเข้ม ตอน hover */
+}
+
+.pagination .page-number.active {
+  background-color: #e67e22; /* ส้มเข้ม สำหรับหน้าปัจจุบัน */
+  color: white;
+}
+    /* ใส่ CSS ส่วนอื่น ๆ ตามที่ได้บอกในคำตอบก่อนหน้านี้ */
+    .pagination img {
+      width: 20px;
+      height: 20px;
+      cursor: pointer;
+    }
+    /* เพิ่มเส้นตาราง */
+  table,
+  th,
+  td {
+    border: 1px solid #ccc;
+  }
+<style>
+  /* --- สไตล์เดิมของคุณคงอยู่ตรงนี้ --- */
+
+  /* --- ปรับความกว้างเฉพาะบางคอลัมน์ --- */
+  th:nth-child(3), td:nth-child(3) { 
+    width: 180px; /* Material */
+    min-width: 150px;
+  }
+
+  th:nth-child(4), td:nth-child(4) {
+    width: 300px; /* Description */
+    min-width: 250px;
+  }
+
+  th:nth-child(9), td:nth-child(9) {
+    width: 200px; /* หมายเหตุ */
+    min-width: 180px;
+  }
+
+  /* --- Responsive: เวลาจอแคบให้เลื่อนตารางได้ --- */
+  .table-container {
+    overflow-x: auto;
+    width: 100%;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 900px; /* กันตารางแคบเกิน */
+  }
+
+  th, td {
+    padding: 8px;
+    text-align: left;
+    white-space: nowrap; /* กันบรรทัดตก */
+  }
+
+  @media (max-width: 768px) {
+    th, td {
+      padding: 6px;
+      font-size: 14px;
+    }
+  }
+   tr {
+      opacity: 0;
+      transform: translateY(10px);
+      animation: fadeInUp 0.5s ease forwards;
+    }
+
+    tr:nth-child(even) {
+      animation-delay: 0.1s;
+    }
+
+    tr:nth-child(odd) {
+      animation-delay: 0.2s;
+    }
+
+    @keyframes fadeInUp {
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* Modal Animation */
+    .modal-content {
+      animation: zoomIn 0.4s ease;
+    }
+
+    @keyframes zoomIn {
+      from {
+        opacity: 0;
+        transform: scale(0.8);
+      }
+      to {
+        opacity: 1;
+        transform: scale(1);
+      }
+    }
+
+    /* ปุ่ม smooth */
+    button, .page-number, .detail-button {
+      transition: all 0.3s ease;
+    }
+
+    .detail-button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    }
+
+    .pagination .page-number:hover {
+      transform: scale(1.1);
+    }
+    th:nth-child(9), td:nth-child(9) {
+  width: 80px;  /* หรือเล็กกว่านี้ เช่น 60px */
+  min-width: 60px;
+  max-width: 100px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+</style>
+
+</head>
+<body>
+  <div id="searchContainer">
+    <input type="text" id="searchInput" placeholder="ค้นหา Code,Description, ชื่อช่าง หรือ ทีม..." />
+  </div>
+  <table id="data-table">
+    <thead>
+      <tr>
+        <th>Status</th>
+        <th class="sortable" data-column="Timestamp">วันเวลา <span class="arrow"></span></th>
+        <th class="sortable" data-column="Code">Material <span class="arrow"></span></th>
+        <th class="sortable" data-column="Material Description">Description <span class="arrow"></span></th>
+        <th>จำนวน</th>
+        <th class="sortable" data-column="ชื่อช่าง">ชื่อช่าง <span class="arrow"></span></th>
+        <th>หน่วยงาน</th>
+        <th>เลขที่Call</th>
+        <th>CallType</th>
+        <th class="sortable" data-column="หมายเหตุ">หมายเหตุ <span class="arrow"></span></th>
+        <th>ดูรายละเอียด</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+
+  <div id="detailModal" class="modal">
+    <div class="modal-content">
+      <span class="close" id="closeModal">&times;</span>
+      <h2>รายละเอียด</h2>
+      <div id="modalContent"></div>
+    </div>
+  </div>
+
+  <div class="pagination">
+    <button id="firstPage"><i class="fas fa-chevron-left"></i><i class="fas fa-chevron-left"></i></button>
+    <button id="prevPage"><i class="fas fa-chevron-left"></i></button>
+    <div id="pageNumbers"></div>
+    <button id="nextPage"><i class="fas fa-chevron-right"></i></button>
+    <button id="lastPage"><i class="fas fa-chevron-right"></i><i class="fas fa-chevron-right"></i></button>
+    <div class="items-per-page">
+      <label for="itemsPerPage">:</label>
+      <select id="itemsPerPage">
+        <option value="10">10 รายการ</option>
+        <option value="20">20 รายการ</option>
+        <option value="30">30 รายการ</option>
+      </select>
+    </div>
+  </div>
+
+  <script>
+    const sheetID = '1fPzWLyR0xqU30gyIMSuSCuglKEr76AT1ekCR3mY-nrU';
+    const sheetName = 'ReQuestHistory';
+    const url = `https://opensheet.elk.sh/${sheetID}/${sheetName}`;
+
+    const modal = document.getElementById("detailModal");
+    const modalContent = document.getElementById("modalContent");
+    const closeModal = document.getElementById("closeModal");
+    const searchInput = document.getElementById("searchInput");
+    const tableBody = document.querySelector("#data-table tbody");
+    const pageNumbersContainer = document.getElementById("pageNumbers");
+    const firstPageButton = document.getElementById("firstPage");
+    const prevPageButton = document.getElementById("prevPage");
+    const nextPageButton = document.getElementById("nextPage");
+    const lastPageButton = document.getElementById("lastPage");
+    const itemsPerPageSelect = document.getElementById("itemsPerPage");
+
+    let allData = [];
+    let currentPage = 1;
+    let itemsPerPage = parseInt(itemsPerPageSelect.value);
+
+    closeModal.onclick = () => modal.style.display = "none";
+    window.onclick = event => {
+      if (event.target == modal) modal.style.display = "none";
+    };
+
+    itemsPerPageSelect.addEventListener("change", (e) => {
+      itemsPerPage = parseInt(e.target.value);
+      currentPage = 1;
+      renderTable(allData);
+    });
+
+   function renderTable(data) {
+      tableBody.innerHTML = '';
+      const startIdx = (currentPage - 1) * itemsPerPage;
+      const endIdx = startIdx + itemsPerPage;
+      const paginatedData = data.slice(startIdx, endIdx);
+
+      paginatedData.forEach((row, i) => {
+        const tr = document.createElement("tr");
+        tr.style.animationDelay = `${i * 0.05}s`; // Fade-in ทีละแถว
+
+
+         const status = row["Status"] || "";
+        const statusTd = document.createElement("td");
+        statusTd.textContent = status;
+        statusTd.className = status === "สั่งเบิกแล้ว" ? "status-green" : "status-red";
+        tr.appendChild(statusTd);
+
+        const columns = ["Timestamp", "Code", "Material Description", "จำนวน", "ชื่อช่าง", "หน่วยงาน","CallNumber","CallType", "Note"];
+        columns.forEach(col => {
+          const td = document.createElement("td");
+          td.textContent = row[col] || "";
+          tr.appendChild(td);
+        });
+
+        const detailTd = document.createElement("td");
+        const btn = document.createElement("button");
+        btn.textContent = "ดูรายละเอียด";
+        btn.className = "detail-button";
+        btn.onclick = () => {
+          modalContent.innerHTML = columns.map(col => {
+            const label = col === "Timestamp" ? "วันเวลา" : col;
+            return `<div><span class='label'>${label}:</span> <span class='value'>${row[col] || ''}</span></div>`;
+          }).join('');
+          modal.style.display = "block";
+        };
+        detailTd.appendChild(btn);
+        tr.appendChild(detailTd);
+
+        tableBody.appendChild(tr);
+      });
+      updatePagination(data);
+    }
+
+    function updatePagination(data) {
+  const totalPages = Math.ceil(data.length / itemsPerPage);
+  pageNumbersContainer.innerHTML = '';
+
+  const startPage = currentPage; // เริ่มที่หน้าปัจจุบัน
+  const endPage = Math.min(totalPages, currentPage + 2); // ไปอีก 2 หน้า
+
+  for (let i = startPage; i <= endPage; i++) {
+    const pageNumberButton = document.createElement("button");
+    pageNumberButton.className = `page-number ${i === currentPage ? 'active' : ''}`;
+    pageNumberButton.textContent = i;
+    pageNumberButton.onclick = () => {
+      currentPage = i;
+      renderTable(data);
+    };
+    pageNumbersContainer.appendChild(pageNumberButton);
+  }
+}
+
+// ปุ่มเลื่อนไปหน้าแรก
+firstPageButton.onclick = () => {
+  currentPage = 1;
+  renderTable(allData);
+};
+
+// ปุ่มย้อนกลับ
+prevPageButton.onclick = () => {
+  if (currentPage > 1) {
+    currentPage--;
+    renderTable(allData);
+  }
+};
+
+// ปุ่มไปหน้า next
+nextPageButton.onclick = () => {
+  const totalPages = Math.ceil(allData.length / itemsPerPage);
+  if (currentPage < totalPages) {
+    currentPage++;
+    renderTable(allData);
+  }
+};
+
+// ปุ่มไปหน้าสุดท้าย
+lastPageButton.onclick = () => {
+  currentPage = Math.ceil(allData.length / itemsPerPage);
+  renderTable(allData);
+};
+    searchInput.addEventListener("input", e => {
+      const keyword = e.target.value.toLowerCase();
+      const filtered = allData.filter(row => {
+        return (
+          (row["Code"] || "").toLowerCase().includes(keyword) ||
+          (row["Material Description"] || "").toLowerCase().includes(keyword) ||
+          (row["ชื่อช่าง"] || "").toLowerCase().includes(keyword) ||
+          (row["ทีม"] || "").toLowerCase().includes(keyword) ||
+          (row["หมายเหตุ"] || "").toLowerCase().includes(keyword)
+        );
+      });
+      renderTable(filtered);
+    });
+
+    fetch(url)
+      .then(response => response.json())
+      .then(data => {
+        allData = data;
+        renderTable(data);
+      })
+      .catch(error => {
+        console.error("ไม่สามารถโหลดข้อมูลได้:", error);
+      });
+  </script>
+</body>
+</html>
