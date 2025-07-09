@@ -2,531 +2,329 @@
 <html lang="th">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>รายการเบิกอะไหล่</title>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Label 102x30 mm</title>
+  <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.1/build/qrcode.min.js"></script>
   <style>
+    @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@400;700&display=swap');
     body {
-      font-family: 'Prompt', sans-serif;
-      background-color: #f0f4f8;
+      font-family: 'Noto Sans Thai', sans-serif;
       margin: 0;
-      padding: 20px;
+      padding: 0;
     }
-    #searchContainer {
+    .container {
+      display: block;
+      width: 106mm;
+    }
+    .sticker {
+      width: 106mm;
+      height: 30mm;
       display: flex;
-      justify-content: flex-start;
-      margin-bottom: 20px;
+      flex-direction: row;
+      background: white;
+      box-sizing: border-box;
+      margin-bottom: 0;
     }
-    #searchInput {
-      width: 100%;
-      max-width: 300px;
-      padding: 10px;
-      border-radius: 8px;
-      border: 1px solid #ccc;
-      font-size: 16px;
+    .label {
+      width: 53mm;
+      height: 30mm;
+      box-sizing: border-box;
+      padding: 1mm;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      border-right: 0.5px solid #ccc;
     }
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      background: #fff;
-      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-      border-radius: 12px;
-      overflow: hidden;
+    .label:last-child {
+      border-right: none;
     }
-    th, td {
-      padding: 6px 12px;
-      text-align: left;
-      border-bottom: 1px solid #e0e0e0;
-      cursor: pointer;
+    .row {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      margin-bottom: 1mm;
     }
-    th {
-      background-color: #007bff;
-      color: white;
+    .qr {
+      width: 12.5mm;
+      height: 12.5mm;
+      margin-right: 5mm;
+      margin-left: 3mm;
     }
-    td:nth-child(6) {
-      min-width: 180px;
-    }
-    tr:hover {
-      background-color: #f1f1f1;
-    }
-    .status-green {
-      color: green;
-      font-weight: bold;
-    }
-    .status-red {
-      color: red;
-      font-weight: bold;
-    }
-    .detail-button {
-      padding: 6px 10px;
-      background-color: #3498db;
-      color: white;
-      border: none;
-      border-radius: 6px;
-      cursor: pointer;
-    }
-    .detail-button:hover {
-      background-color: #2980b9;
-    }
-    .modal {
-      display: none;
-      position: fixed;
-      z-index: 1000;
-      left: 0;
-      top: 0;
-      width: 100%;
-      height: 100%;
-      overflow: auto;
-      background-color: rgba(0,0,0,0.5);
-    }
-    .modal-content {
-      background-color: #fff;
-      margin: 10% auto;
-      padding: 20px;
-      border-radius: 12px;
-      width: 80%;
-      max-width: 500px;
-    }
-    .close {
-      color: #aaa;
-      float: right;
+    .material {
       font-size: 24px;
       font-weight: bold;
-      cursor: pointer;
+      text-align: left;
+      margin: 0;
+      line-height: 1;
     }
-    .close:hover {
-      color: #000;
+    .technician {
+      font-size: 10px;
+      text-align: left;
+      margin: 0;
+      margin-right: 2mm;
+      line-height: 1.2;
     }
-    #modalContent span.label {
-      color: #007bff;
+    .department {
+      font-size: 10px;
+      text-align: left;
+      margin: 0;
+      margin-right: 2mm;
+      line-height: 1.2;
+    }
+    .description {
+      font-size: 10px;
       font-weight: bold;
+      text-align: left;
+      line-height: 1.2;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      word-wrap: break-word;
+      margin: 0;
+      margin-left: 2mm;
     }
-    #modalContent span.value {
-      color: #000;
+    .location {
+      font-size: 12px;
+      font-weight: bold;
+      text-align: left;
+      margin-top: 1px;
+      margin-bottom: 0;
+      line-height: 1.1;
+      margin-left: 2mm;
     }
-    .pagination {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  margin-top: 20px;
-}
-    .pagination button,
-    .pagination select {
-      padding: 8px 12px;
-      background-color: #3498db;
+    .lot-line {
+      display: flex;
+      justify-content: space-between;
+      font-size: 10px;
+      font-weight: bold;
+      margin-top: 0;
+      margin-bottom: 0;
+      line-height: 1.1;
+      margin-left: 2mm;
+      margin-right: 1mm;
+    }
+    .lot {
+      font-size: 8px;
+      text-align: left;
+      line-height: 1;
+      margin: 0;
+    }
+    .print-button {
+      position: fixed;
+      top: 10px;
+      right: 10px;
+      padding: 8px 16px;
+      background-color: #4CAF50;
       color: white;
       border: none;
-      border-radius: 6px;
+      border-radius: 5px;
       cursor: pointer;
-      font-size: 16px;
-      margin: 0 5px;
+      z-index: 1000;
     }
-    .pagination button:hover,
-    .pagination select:hover {
-      background-color: #2980b9;
+    .print-button:hover {
+      background-color: #45a049;
     }
-    .pagination .page-number {
-      padding: 6px 10px;
-      background-color: #ecf0f1;
-      color: #3498db;
-      border-radius: 6px;
-      margin: 0 3px;
-      cursor: pointer;
+    /* Spinner Styles */
+    .spinner-container {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(255, 255, 255, 0.8);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 2000;
     }
-    .pagination .page-number.active {
-      background-color: #3498db;
-      color: white;
+    .spinner {
+      border: 4px solid #f3f3f3;
+      border-top: 4px solid #4CAF50;
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      animation: spin 1s linear infinite;
     }
-    .pagination img {
-      width: 20px;
-      height: 20px;
-      cursor: pointer;
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
     }
-    .items-per-page {
-      margin-left: 10px;
-      font-size: 16px;
-    }
-    .pagination {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  align-items: center;
-  margin-top: 10px;
-}
-
-.pagination button,
-.pagination select {
-  padding: 8px 12px;
-  background-color: #3498db;
-  color: white;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-  font-size: 16px;
-  margin: 0 5px;
-}
-
-.pagination button:hover,
-.pagination select:hover {
-  background-color: #2980b9;
-}
-
-.pagination .page-number {
-  padding: 6px 10px;
-  background-color: #ecf0f1;
-  color: #3498db;
-  border-radius: 6px;
-  margin: 0 3px;
-  cursor: pointer;
-}
-
-.pagination .page-number.active {
-  background-color: #3498db;
-  color: white;
-}
-
-.pagination img {
-  width: 20px;
-  height: 20px;
-  cursor: pointer;
-}
-
-.items-per-page {
-  margin-left: 10px;
-  font-size: 16px;
-}
-.pagination .page-number {
-  width: 36px;
-  height: 36px;
-  background-color: #3498db; /* น้ำเงิน */
-  color: white;
-  border-radius: 50%;
-  display: inline-flex;
-  justify-content: center;
-  align-items: center;
-  margin: 0 5px;
-  cursor: pointer;
-  font-size: 16px;
-  border: none;
-  transition: background-color 0.3s; /* ลื่นตอน hover */
-}
-
-.pagination .page-number:hover {
-  background-color: #2980b9; /* น้ำเงินเข้ม ตอน hover */
-}
-
-.pagination .page-number.active {
-  background-color: #e67e22; /* ส้มเข้ม สำหรับหน้าปัจจุบัน */
-  color: white;
-}
-    /* ใส่ CSS ส่วนอื่น ๆ ตามที่ได้บอกในคำตอบก่อนหน้านี้ */
-    .pagination img {
-      width: 20px;
-      height: 20px;
-      cursor: pointer;
-    }
-    /* เพิ่มเส้นตาราง */
-  table,
-  th,
-  td {
-    border: 1px solid #ccc;
-  }
-<style>
-  /* --- สไตล์เดิมของคุณคงอยู่ตรงนี้ --- */
-
-  /* --- ปรับความกว้างเฉพาะบางคอลัมน์ --- */
-  th:nth-child(3), td:nth-child(3) { 
-    width: 180px; /* Material */
-    min-width: 150px;
-  }
-
-  th:nth-child(4), td:nth-child(4) {
-    width: 300px; /* Description */
-    min-width: 250px;
-  }
-
-  th:nth-child(9), td:nth-child(9) {
-    width: 200px; /* หมายเหตุ */
-    min-width: 180px;
-  }
-
-  /* --- Responsive: เวลาจอแคบให้เลื่อนตารางได้ --- */
-  .table-container {
-    overflow-x: auto;
-    width: 100%;
-  }
-
-  table {
-    width: 100%;
-    border-collapse: collapse;
-    min-width: 900px; /* กันตารางแคบเกิน */
-  }
-
-  th, td {
-    padding: 8px;
-    text-align: left;
-    white-space: nowrap; /* กันบรรทัดตก */
-  }
-
-  @media (max-width: 768px) {
-    th, td {
-      padding: 6px;
-      font-size: 14px;
-    }
-  }
-   tr {
-      opacity: 0;
-      transform: translateY(10px);
-      animation: fadeInUp 0.5s ease forwards;
-    }
-
-    tr:nth-child(even) {
-      animation-delay: 0.1s;
-    }
-
-    tr:nth-child(odd) {
-      animation-delay: 0.2s;
-    }
-
-    @keyframes fadeInUp {
-      to {
-        opacity: 1;
-        transform: translateY(0);
+    @media print {
+      .print-button, .spinner-container {
+        display: none;
+      }
+      body {
+        margin: 0;
+        padding: 0;
+      }
+      .container {
+        width: 102mm;
+        margin: 0;
+      }
+      .sticker {
+        page-break-inside: avoid;
+        margin: 0;
       }
     }
-
-    /* Modal Animation */
-    .modal-content {
-      animation: zoomIn 0.4s ease;
-    }
-
-    @keyframes zoomIn {
-      from {
-        opacity: 0;
-        transform: scale(0.8);
-      }
-      to {
-        opacity: 1;
-        transform: scale(1);
-      }
-    }
-
-    /* ปุ่ม smooth */
-    button, .page-number, .detail-button {
-      transition: all 0.3s ease;
-    }
-
-    .detail-button:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-    }
-
-    .pagination .page-number:hover {
-      transform: scale(1.1);
-    }
-    th:nth-child(9), td:nth-child(9) {
-  width: 80px;  /* หรือเล็กกว่านี้ เช่น 60px */
-  min-width: 60px;
-  max-width: 100px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-</style>
-
+  </style>
 </head>
 <body>
-  <div id="searchContainer">
-    <input type="text" id="searchInput" placeholder="ค้นหา Code,Description, ชื่อช่าง หรือ ทีม..." />
+  <button class="print-button" onclick="window.print()">Print Preview</button>
+  <div class="spinner-container" id="spinner">
+    <div class="spinner"></div>
   </div>
-  <table id="data-table">
-    <thead>
-      <tr>
-        <th>Status</th>
-        <th class="sortable" data-column="Timestamp">วันเวลา <span class="arrow"></span></th>
-        <th class="sortable" data-column="Code">Material <span class="arrow"></span></th>
-        <th class="sortable" data-column="Material Description">Description <span class="arrow"></span></th>
-        <th>จำนวน</th>
-        <th class="sortable" data-column="ชื่อช่าง">ชื่อช่าง <span class="arrow"></span></th>
-        <th>หน่วยงาน</th>
-        <th>เลขที่Call</th>
-        <th>CallType</th>
-        <th class="sortable" data-column="หมายเหตุ">หมายเหตุ <span class="arrow"></span></th>
-        <th>ดูรายละเอียด</th>
-      </tr>
-    </thead>
-    <tbody></tbody>
-  </table>
-
-  <div id="detailModal" class="modal">
-    <div class="modal-content">
-      <span class="close" id="closeModal">&times;</span>
-      <h2>รายละเอียด</h2>
-      <div id="modalContent"></div>
-    </div>
-  </div>
-
-  <div class="pagination">
-    <button id="firstPage"><i class="fas fa-chevron-left"></i><i class="fas fa-chevron-left"></i></button>
-    <button id="prevPage"><i class="fas fa-chevron-left"></i></button>
-    <div id="pageNumbers"></div>
-    <button id="nextPage"><i class="fas fa-chevron-right"></i></button>
-    <button id="lastPage"><i class="fas fa-chevron-right"></i><i class="fas fa-chevron-right"></i></button>
-    <div class="items-per-page">
-      <label for="itemsPerPage">:</label>
-      <select id="itemsPerPage">
-        <option value="10">10 รายการ</option>
-        <option value="20">20 รายการ</option>
-        <option value="30">30 รายการ</option>
-      </select>
-    </div>
+  <div id="app">
+    <p style="text-align:center;">กำลังโหลดข้อมูล...</p>
   </div>
 
   <script>
-    const sheetID = '1fPzWLyR0xqU30gyIMSuSCuglKEr76AT1ekCR3mY-nrU';
-    const sheetName = 'ReQuestHistory';
+    const sheetID = "1q-yJfvUsdGDYBqY7V_V9AhHp1Z9augtxvLWblzTV9XM";
+    const sheetName = "Data_Add";
     const url = `https://opensheet.elk.sh/${sheetID}/${sheetName}`;
 
-    const modal = document.getElementById("detailModal");
-    const modalContent = document.getElementById("modalContent");
-    const closeModal = document.getElementById("closeModal");
-    const searchInput = document.getElementById("searchInput");
-    const tableBody = document.querySelector("#data-table tbody");
-    const pageNumbersContainer = document.getElementById("pageNumbers");
-    const firstPageButton = document.getElementById("firstPage");
-    const prevPageButton = document.getElementById("prevPage");
-    const nextPageButton = document.getElementById("nextPage");
-    const lastPageButton = document.getElementById("lastPage");
-    const itemsPerPageSelect = document.getElementById("itemsPerPage");
+    async function loadAndRender() {
+      try {
+        const response = await fetch(url);
+        const data = await response.json();
 
-    let allData = [];
-    let currentPage = 1;
-    let itemsPerPage = parseInt(itemsPerPageSelect.value);
+        const cleanedData = data.map(row => ({
+          Material: row['Material'] || '',
+          QtyPrint: row['QtyPrint'] || '',
+          จำนวน: parseInt(row['จำนวน']) || 1,
+          Pack: row['Pack'] || '',
+          IDช่าง: row['IDช่าง'] || '',
+          Serial: row['Serial'] || '',
+          Description: row['Description'] || '',
+          Storagebin: row['Storagebin'] || '',
+          ชื่อช่าง: row['ชื่อช่าง'] || '',
+          Unit: row['Unit'] || '',
+          แผนก: row['แผนก'] || ''
+        }));
 
-    closeModal.onclick = () => modal.style.display = "none";
-    window.onclick = event => {
-      if (event.target == modal) modal.style.display = "none";
-    };
+        // Ensure spinner is shown for at least 3 seconds
+        const minLoadingTime = new Promise(resolve => setTimeout(resolve, 3000));
+        await Promise.all([minLoadingTime, Promise.resolve()]);
 
-    itemsPerPageSelect.addEventListener("change", (e) => {
-      itemsPerPage = parseInt(e.target.value);
-      currentPage = 1;
-      renderTable(allData);
-    });
+        // Hide spinner
+        document.getElementById('spinner').style.display = 'none';
 
-   function renderTable(data) {
-      tableBody.innerHTML = '';
-      const startIdx = (currentPage - 1) * itemsPerPage;
-      const endIdx = startIdx + itemsPerPage;
-      const paginatedData = data.slice(startIdx, endIdx);
-
-      paginatedData.forEach((row, i) => {
-        const tr = document.createElement("tr");
-        tr.style.animationDelay = `${i * 0.05}s`; // Fade-in ทีละแถว
-
-
-         const status = row["Status"] || "";
-        const statusTd = document.createElement("td");
-        statusTd.textContent = status;
-        statusTd.className = status === "สั่งเบิกแล้ว" ? "status-green" : "status-red";
-        tr.appendChild(statusTd);
-
-        const columns = ["Timestamp", "Code", "Material Description", "จำนวน", "ชื่อช่าง", "หน่วยงาน","CallNumber","CallType", "Note"];
-        columns.forEach(col => {
-          const td = document.createElement("td");
-          td.textContent = row[col] || "";
-          tr.appendChild(td);
-        });
-
-        const detailTd = document.createElement("td");
-        const btn = document.createElement("button");
-        btn.textContent = "ดูรายละเอียด";
-        btn.className = "detail-button";
-        btn.onclick = () => {
-          modalContent.innerHTML = columns.map(col => {
-            const label = col === "Timestamp" ? "วันเวลา" : col;
-            return `<div><span class='label'>${label}:</span> <span class='value'>${row[col] || ''}</span></div>`;
-          }).join('');
-          modal.style.display = "block";
-        };
-        detailTd.appendChild(btn);
-        tr.appendChild(detailTd);
-
-        tableBody.appendChild(tr);
-      });
-      updatePagination(data);
+        renderLabels(cleanedData);
+      } catch (err) {
+        document.getElementById('spinner').style.display = 'none';
+        document.getElementById('app').innerHTML = '<p style="color:red;">โหลดข้อมูลล้มเหลว</p>';
+        console.error(err);
+      }
     }
 
-    function updatePagination(data) {
-  const totalPages = Math.ceil(data.length / itemsPerPage);
-  pageNumbersContainer.innerHTML = '';
+    function renderLabels(data) {
+      const app = document.getElementById('app');
+      app.innerHTML = '<div class="container"></div>';
+      const container = app.querySelector('.container');
 
-  const startPage = currentPage; // เริ่มที่หน้าปัจจุบัน
-  const endPage = Math.min(totalPages, currentPage + 2); // ไปอีก 2 หน้า
-
-  for (let i = startPage; i <= endPage; i++) {
-    const pageNumberButton = document.createElement("button");
-    pageNumberButton.className = `page-number ${i === currentPage ? 'active' : ''}`;
-    pageNumberButton.textContent = i;
-    pageNumberButton.onclick = () => {
-      currentPage = i;
-      renderTable(data);
-    };
-    pageNumbersContainer.appendChild(pageNumberButton);
-  }
-}
-
-// ปุ่มเลื่อนไปหน้าแรก
-firstPageButton.onclick = () => {
-  currentPage = 1;
-  renderTable(allData);
-};
-
-// ปุ่มย้อนกลับ
-prevPageButton.onclick = () => {
-  if (currentPage > 1) {
-    currentPage--;
-    renderTable(allData);
-  }
-};
-
-// ปุ่มไปหน้า next
-nextPageButton.onclick = () => {
-  const totalPages = Math.ceil(allData.length / itemsPerPage);
-  if (currentPage < totalPages) {
-    currentPage++;
-    renderTable(allData);
-  }
-};
-
-// ปุ่มไปหน้าสุดท้าย
-lastPageButton.onclick = () => {
-  currentPage = Math.ceil(allData.length / itemsPerPage);
-  renderTable(allData);
-};
-    searchInput.addEventListener("input", e => {
-      const keyword = e.target.value.toLowerCase();
-      const filtered = allData.filter(row => {
-        return (
-          (row["Code"] || "").toLowerCase().includes(keyword) ||
-          (row["Material Description"] || "").toLowerCase().includes(keyword) ||
-          (row["ชื่อช่าง"] || "").toLowerCase().includes(keyword) ||
-          (row["ทีม"] || "").toLowerCase().includes(keyword) ||
-          (row["หมายเหตุ"] || "").toLowerCase().includes(keyword)
-        );
+      // Filter data to include only rows with non-empty Material and Serial = true
+      const validData = data.filter(row => row.Material && row.Material.trim() !== '' && row.Serial === 'true');
+      
+      validData.sort((a, b) => a.Material.localeCompare(b.Material));
+      
+      const expandedData = [];
+      validData.forEach(row => {
+        const qty = Math.max(1, row.จำนวน);
+        for (let i = 0; i < qty; i++) {
+          expandedData.push({ ...row });
+        }
       });
-      renderTable(filtered);
-    });
 
-    fetch(url)
-      .then(response => response.json())
-      .then(data => {
-        allData = data;
-        renderTable(data);
-      })
-      .catch(error => {
-        console.error("ไม่สามารถโหลดข้อมูลได้:", error);
-      });
+      for (let i = 0; i < expandedData.length; i += 2) {
+        const sticker = document.createElement('div');
+        sticker.className = 'sticker';
+
+        const label1 = createLabel(expandedData[i]);
+        sticker.appendChild(label1);
+
+        if (i + 1 < expandedData.length) {
+          const label2 = createLabel(expandedData[i + 1]);
+          sticker.appendChild(label2);
+        } else {
+          const emptyLabel = document.createElement('div');
+          emptyLabel.className = 'label';
+          emptyLabel.innerHTML = '<div class="description">ไม่มีข้อมูล</div>';
+          sticker.appendChild(emptyLabel);
+        }
+
+        container.appendChild(sticker);
+      }
+    }
+
+    function createLabel(row) {
+      const label = document.createElement('div');
+      label.className = 'label';
+
+      const rowDiv = document.createElement('div');
+      rowDiv.className = 'row';
+
+      const qrCanvas = document.createElement('canvas');
+      qrCanvas.className = 'qr';
+      rowDiv.appendChild(qrCanvas);
+
+      const textContainer = document.createElement('div');
+      textContainer.style.display = 'flex';
+      textContainer.style.flexDirection = 'column';
+
+      const materialDiv = document.createElement('div');
+      materialDiv.className = 'material';
+      materialDiv.textContent = row.Material;
+      textContainer.appendChild(materialDiv);
+
+      const technicianDiv = document.createElement('div');
+      technicianDiv.className = 'technician';
+      technicianDiv.textContent = row.ชื่อช่าง;
+      textContainer.appendChild(technicianDiv);
+
+      const departmentDiv = document.createElement('div');
+      departmentDiv.className = 'department';
+      departmentDiv.textContent = row.แผนก;
+      textContainer.appendChild(departmentDiv);
+
+      rowDiv.appendChild(textContainer);
+      label.appendChild(rowDiv);
+
+      const desc = document.createElement('div');
+      desc.className = 'description';
+      desc.textContent = row.Description;
+      label.appendChild(desc);
+
+      const loc = document.createElement('div');
+      loc.className = 'location';
+      loc.textContent = `Location: ${row.Storagebin}`;
+      label.appendChild(loc);
+
+      const now = new Date();
+      const formattedDate = `${now.getFullYear().toString().slice(2)}${String(now.getMonth() + 1).padStart(2, '0')}${String(now.getDate()).padStart(2, '0')}${String(now.getHours()).padStart(2, '0')}${String(now.getMinutes()).padStart(2, '0')}`;
+
+      const lot = document.createElement('div');
+      lot.className = 'lot-line';
+      lot.innerHTML = `
+        <span>Lot: ${formattedDate} (${row.QtyPrint}) <span style="font-size: 18px;">${row.Pack} ${row.Unit}</span></span>
+      `;
+      label.appendChild(lot);
+
+      if (typeof QRCode !== 'undefined') {
+        QRCode.toCanvas(qrCanvas, row.Material || 'N/A', {
+          width: 50,
+          height: 50,
+          margin: 0,
+          errorCorrectionLevel: 'L'
+        }, err => {
+          if (err) console.error('QR Error:', err);
+        });
+      }
+
+      return label;
+    }
+
+    loadAndRender();
   </script>
 </body>
 </html>
